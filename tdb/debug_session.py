@@ -1,6 +1,6 @@
 
-from ht_op import HTOp
-import op_store
+from .op_store import *
+from .ht_op import HTOp
 import tensorflow as tf
 
 # debug status codes
@@ -9,10 +9,10 @@ RUNNING = 'RUNNING'
 PAUSED = 'PAUSED'
 FINISHED = 'FINISHED'
 
-class DebugSession(object):
+class debug_session(object):
 	
 	def __init__(self, session=None):
-		super(DebugSession, self).__init__()
+		super(debug_session, self).__init__()
 		
 		if session is None:
 			session=tf.InteractiveSession()
@@ -44,7 +44,7 @@ class DebugSession(object):
 		self.state=RUNNING
 		self._original_evals=evals
 		self._original_feed_dict=feed_dict
-		self._exe_order=op_store.compute_exe_order(evals)
+		self._exe_order=compute_exe_order(evals)
 		self._init_evals_bps(evals, breakpoints)
 
 		# convert cache keys to strings
@@ -53,7 +53,7 @@ class DebugSession(object):
 				k=k.name
 			self._cache[k]=v
 
-		op_store.register_dbsession(self)
+		register_dbsession(self)
 
 		if break_immediately:
 			return self._break()
@@ -124,10 +124,10 @@ class DebugSession(object):
 
 	def _init_evals_bps(self, evals, breakpoints):
 		# If an eval or bp is the tf.Placeholder output of a tdb.PythonOp, replace it with its respective PythonOp node
-		evals2=[op_store.get_op(t) if op_store.is_htop_out(t) else t for t in evals]
-		breakpoints2=[op_store.get_op(t) if op_store.is_htop_out(t) else t for t in breakpoints]
+		evals2=[get_op(t) if is_htop_out(t) else t for t in evals]
+		breakpoints2=[get_op(t) if is_htop_out(t) else t for t in breakpoints]
 		# compute execution order
-		self._exe_order=op_store.compute_exe_order(evals2) # list of nodes
+		self._exe_order=compute_exe_order(evals2) # list of nodes
 		# compute evaluation set
 		"""
 		HTOps may depend on tf.Tensors that are not in eval. We need to have all inputs to HTOps ready
@@ -144,7 +144,7 @@ class DebugSession(object):
 			if isinstance(e,HTOp):
 				self._evalset.add(e.name)
 				for t in e.inputs:
-					if not op_store.is_htop_out(t):
+					if not is_htop_out(t):
 						self._evalset.add(t.name)
 
 		# compute breakpoint set

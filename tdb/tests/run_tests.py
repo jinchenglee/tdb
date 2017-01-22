@@ -2,6 +2,9 @@
 
 import unittest
 
+import sys
+sys.path.append('/home/evjang/thesis/tensor_debugger')
+
 def main():
     test_modules=[
     	'test_exe_order',

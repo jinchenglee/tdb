@@ -1,11 +1,11 @@
 
 COUNT=0
 
-from python_op import PythonOp
-import app
+from .python_op import PythonOp
+from .app import *
 import inspect
 import matplotlib.pyplot as plt
-import op_store
+from .op_store import *
 
 def plot_op(fn, inputs=[], outputs=[]):
 	"""
@@ -30,7 +30,7 @@ def plot_op(fn, inputs=[], outputs=[]):
 
 	op=PlotOp(fn, COUNT, inputs, outputs)
 
-	op_store.add_op(op)
+	add_op(op)
 	COUNT+=1 
 
 	# if node has output, return value for python_op is the first output (placeholder) tensor
@@ -47,9 +47,9 @@ class PlotOp(PythonOp):
 	def run(self, feed_dict):
 		results=super(PlotOp, self).run(feed_dict)
 		# send the image over
-		if app.is_notebook():
+		if is_notebook():
 			fig=plt.gcf()
-			app.send_fig(plt.gcf(), self.name)
+			send_fig(plt.gcf(), self.name)
 			# close the figure
 			plt.close(fig)
 		return results

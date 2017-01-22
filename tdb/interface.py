@@ -3,7 +3,7 @@ top-level interface methods so user doesn't need to directly construct
 a dbsession
 """
 
-import debug_session
+from . import debug_session
 
 # default session
 _dbsession=None
@@ -13,7 +13,7 @@ def debug(evals,feed_dict=None,breakpoints=None,break_immediately=False,session=
 	spawns a new debug session
 	"""
 	global _dbsession
-	_dbsession=debug_session.DebugSession(session)
+	_dbsession=debug_session.debug_session(session)
 	return _dbsession.run(evals,feed_dict,breakpoints,break_immediately)
 
 def s():

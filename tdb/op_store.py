@@ -1,5 +1,5 @@
 from toposort import toposort, toposort_flatten
-from transitive_closure import transitive_closure
+from .transitive_closure import *
 import tensorflow as tf
 
 _ops={} # Map<string,tdb.PythonOp>
@@ -17,12 +17,6 @@ def is_htop_out(placeholder):
 	# returns True if placeholder is the output of a PythonOp
 	return placeholder in _placeholder_2_op
 
-def compute_exe_order(evals):
-	deps=compute_node_deps()
-	eval_names=[e.name for e in evals]
-	tc_deps=transitive_closure(eval_names, deps)
-	ordered_names = toposort_flatten(tc_deps)
-	return [get_node(name) for name in ordered_names]
 
 def get_node(name):
 	"""
@@ -68,3 +62,11 @@ def compute_node_deps():
 				d.add(t.name)
 		deps[op.name]=d
 	return deps
+
+def compute_exe_order(evals):
+	deps=compute_node_deps()
+	eval_names=[e.name for e in evals]
+	tc_deps=transitive_closure(eval_names, deps)
+	ordered_names = toposort_flatten(tc_deps)
+	return [get_node(name) for name in ordered_names]
+
